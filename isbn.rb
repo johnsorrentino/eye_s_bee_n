@@ -24,23 +24,22 @@ module ISBN
   end
 
   def self.convert_isbn_13_to_isbn_10(isbn)
-    isbn[3..11] + calculate_isbn_13_check_digit(isbn)
+    isbn[3..11] + calculate_isbn_10_check_digit(isbn[3..11])
   end
 
-  # http://www.hahnlibrary.net/libraries/isbncalc.html
+  # http://en.wikipedia.org/wiki/International_Standard_Book_Number
   def self.calculate_isbn_10_check_digit(isbn)
-    array_1 = isbn[0..8].split('').map(&:to_i)
-    array_2 = Array(1..9)
-    modulo = sum_product(array_1, array_2) % 11
-    modulo == 10 ? 'X' : modulo.to_s
+    array_1 = [10, 9, 8, 7, 6, 5, 4, 3, 2]
+    array_2 = isbn[0..8].split('').map(&:to_i)
+    check_digit = (11 - (sum_product(array_1, array_2) % 11)) % 11
+    check_digit == 10 ? 'X' : check_digit.to_s
   end
 
-  # http://www.hahnlibrary.net/libraries/isbncalc.html
   def self.calculate_isbn_13_check_digit(isbn)
-    array_1 = isbn[0..11].split('').map(&:to_i)
-    array_2 = [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3]
-    modulo = sum_product(array_1, array_2) % 10
-    modulo.to_s
+    array_1 = [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3]
+    array_2 = isbn[0..11].split('').map(&:to_i)
+    check_digit = 10 - (sum_product(array_1, array_2) % 10)
+    check_digit.to_s
   end
 
   # Fastest sum product: http://stackoverflow.com/a/7373434/3224822
